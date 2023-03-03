@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
 from datetime import datetime
+from django.contrib.auth.models import User
 # Create your models here.
 
 GENDER_CHOICE = (
@@ -84,4 +85,39 @@ class Vehicleexit(models.Model):
     tno = models.CharField(max_length=10,default='')
 
     def __str__(self):
-        return self.vno + '-' + self.vty
+        return self.vno + '-' + self.vty 
+
+
+class ParkingSpot(models.Model):
+    PARKING_TYPE_CHOICES = [
+        ('I', 'Indoor'),
+        ('O', 'Outdoor'),
+    ]
+
+    name = models.CharField(max_length=100)
+    parking_type = models.CharField(max_length=1, choices=PARKING_TYPE_CHOICES)
+    is_booked = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+    def is_available(self):
+        """
+        Check if the parking spot is available
+        """
+        return not self.is_booked 
+
+class Booking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    parking_spot = models.ForeignKey(ParkingSpot, on_delete=models.CASCADE)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+
+    def __str__(self):
+        return f'{self.user.username} - {self.parking_spot.name}'
+
+    def duration(self):
+        """
+        Calculate the duration of the booking
+        """
+        return (self.end_time - self.start_time).seconds // 3600
