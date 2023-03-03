@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+
+{% block content %}
+  <h1>Book Parking Spot</h1>
+  <form method="POST" action="{% url 'book_parking_spot' parking_spot.id %}">
+    {% csrf_token %}
+    <p>{{ parking_spot.name }}</p>
+    <p>{{ parking_spot.parking_type }}</p>
+    {% if parking_spot.is_available %}
+      <button type="submit">Book Now</button>
+    {% else %}
+      <p>This parking spot is not available.</p>
+    {% endif %}
+  </form>
+{% endblock %}
